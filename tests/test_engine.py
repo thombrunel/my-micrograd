@@ -25,6 +25,55 @@ def test_sanity_check():
     # backward pass went well
     assert xmg.grad == xpt.grad.item()
 
+# Copied and pasted to test other activation functions
+def test_sig():
+
+    x = Value(-4.0)
+    z = 2 * x + 2 + x
+    q = z.sigmoid() + z * x
+    h = (z * z).sigmoid()
+    y = h + q + q * x
+    y.backward()
+    xmg, ymg = x, y
+
+    x = torch.Tensor([-4.0]).double()
+    x.requires_grad = True
+    z = 2 * x + 2 + x
+    q = z.sigmoid() + z * x
+    h = (z * z).sigmoid()
+    y = h + q + q * x
+    y.backward()
+    xpt, ypt = x, y
+
+    # forward pass went well
+    assert ymg.data == ypt.data.item()
+    # backward pass went well
+    assert xmg.grad == xpt.grad.item()
+
+def test_tanh():
+
+    x = Value(-4.0)
+    z = 2 * x + 2 + x
+    q = z.tanh() + z * x
+    h = (z * z).tanh()
+    y = h + q + q * x
+    y.backward()
+    xmg, ymg = x, y
+
+    x = torch.Tensor([-4.0]).double()
+    x.requires_grad = True
+    z = 2 * x + 2 + x
+    q = z.tanh() + z * x
+    h = (z * z).tanh()
+    y = h + q + q * x
+    y.backward()
+    xpt, ypt = x, y
+
+    # forward pass went well
+    assert ymg.data == ypt.data.item()
+    # backward pass went well
+    assert xmg.grad == xpt.grad.item()
+
 def test_more_ops():
 
     a = Value(-4.0)
@@ -71,3 +120,5 @@ def test_more_ops():
 if __name__ == "__main__":
     test_sanity_check()
     test_more_ops()
+    test_sig()
+    test_tanh()
